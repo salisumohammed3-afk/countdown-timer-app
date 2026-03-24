@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #64ffda;
+            text-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+        }
+
+        .timer-setup {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #b0bec5;
+        }
+
+        .input-group input {
+            width: 60px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #64ffda;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .progress-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: #64ffda;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.5));
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-pause {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-pause:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .btn-reset {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .timer-setup {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .progress-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Countdown Timer</h1>
+        
+        <div class="timer-setup">
+            <div class="input-group">
+                <label>Minutes</label>
+                <input type="number" id="minutes" min="0" max="59" value="5">
+            </div>
+            <div class="input-group">
+                <label>Seconds</label>
+                <input type="number" id="seconds" min="0" max="59" value="0">
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <svg class="progress-ring" width="200" height="200">
+                <circle class="progress-ring-bg" cx="100" cy="100" r="90"></circle>
+                <circle class="progress-ring-fill" cx="100" cy="100" r="90" 
+                        stroke-dasharray="565.48" stroke-dashoffset="565.48"></circle>
+            </svg>
+            <div class="timer-display" id="display">05:00</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-start" id="startBtn">Start</button>
+            <button class="btn btn-pause" id="pauseBtn" disabled>Pause</button>
+            <button class="btn btn-reset" id="resetBtn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        class CountdownTimer {
+            constructor() {
+                this.totalSeconds = 0;
+                this.remainingSeconds = 0;
+                this.isRunning = false;
+                this.intervalId = null;
+                
+                this.minutesInput = document.getElementById('minutes');
+                this.secondsInput = document.getElementById('seconds');
+                this.display = document.getElementById('display');
+                this.startBtn = document.getElementById('startBtn');
+                this.pauseBtn = document.getElementById('pauseBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.progressRing = document.querySelector('.progress-ring-fill');
+                
+                this.circumference = 2 * Math.PI * 90; // radius = 90
+                
+                this.initEventListeners();
+                this.updateDisplay();
+                this.updateProgress();
+            }
+            
+            initEventListeners() {
+                this.startBtn.addEventListener('click', () => this.start());
+                this.pauseBtn.addEventListener('click', () => this.pause());
+                this.resetBtn.addEventListener('click', () => this.reset());
+                
+                this.minutesInput.addEventListener('input', () => this.updateFromInputs());
+                this.secondsInput.addEventListener('input', () => this.updateFromInputs());
+            }
+            
+            updateFromInputs() {
+                if (!this.isRunning) {
+                    const minutes = parseInt(this.minutesInput.value) || 0;
+                    const seconds = parseInt(this.secondsInput.value) || 0;
+                    this.totalSeconds = minutes * 60 + seconds;
+                    this.remainingSeconds = this.totalSeconds;
+                    this.updateDisplay();
+                    this.updateProgress();
+                }
+            }
+            
+            start() {
+                if (this.remainingSeconds === 0) {
+                    this.updateFromInputs();
+                }
+                
+                if (this.remainingSeconds > 0) {
+                    this.isRunning = true;
+                    this.startBtn.disabled = true;
+                    this.pauseBtn.disabled = false;
+                    this.minutesInput.disabled = true;
+                    this.secondsInput.disabled = true;
+                    
+                    this.intervalId = setInterval(() => {
+                        this.remainingSeconds--;
+                        this.updateDisplay();
+                        this.updateProgress();
+                        
+                        if (this.remainingSeconds <= 0) {
+                            this.complete();
+                        }
+                    }, 1000);
+                }
+            }
+            
+            pause() {
+                this.isRunning = false;
+                clearInterval(this.intervalId);
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.minutesInput.disabled = false;
+                this.secondsInput.disabled = false;
+            }
+            
+            reset() {
+                this.isRunning = false;
+                clearInterval(this.intervalId);
+                this.remainingSeconds = 0;
+                this.totalSeconds = 0;
+                
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.minutesInput.disabled = false;
+                this.secondsInput.disabled = false;
+                
+                this.minutesInput.value = 5;
+                this.secondsInput.value = 0;
+                this.updateFromInputs();
+            }
+            
+            complete() {
+                this.isRunning = false;
+                clearInterval(this.intervalId);
+                this.startBtn.disabled = false;
+                this.pauseBtn.disabled = true;
+                this.minutesInput.disabled = false;
+                this.secondsInput.disabled = false;
+                
+                // Flash effect
+                this.display.style.color = '#ff4444';
+                this.display.style.animation = 'pulse 0.5s ease-in-out infinite alternate';
+                
+                // Add pulse animation CSS
+                if (!document.getElementById('pulseAnimation')) {
+                    const style = document.createElement('style');
+                    style.id = 'pulseAnimation';
+                    style.textContent = `
+                        @keyframes pulse {
+                            from { transform: translate(-50%, -50%) scale(1); }
+                            to { transform: translate(-50%, -50%) scale(1.1); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    this.display.style.color = '#ffffff';
+                    this.display.style.animation = 'none';
+                }, 3000);
+            }
+            
+            updateDisplay() {
+                const minutes = Math.floor(this.remainingSeconds / 60);
+                const seconds = this.remainingSeconds % 60;
+                this.display.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            updateProgress() {
+                if (this.totalSeconds === 0) {
+                    this.progressRing.style.strokeDashoffset = this.circumference;
+                    return;
+                }
+                
+                const progress = (this.totalSeconds - this.remainingSeconds) / this.totalSeconds;
+                const offset = this.circumference - (progress * this.circumference);
+                this.progressRing.style.strokeDashoffset = offset;
+            }
+        }
+        
+        // Initialize the timer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new CountdownTimer();
+        });
+    </script>
+</body>
+</html>
